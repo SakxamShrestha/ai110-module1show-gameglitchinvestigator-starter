@@ -232,4 +232,11 @@ both inclusive boundaries.
 
 **Professional documentation and style.** Every function in `logic_utils.py`
 carries a docstring, both modules have module-level docstrings, and the
-codebase passes `flake8 --max-line-length=100` with zero warnings.
+codebase passes `flake8 --max-line-length=100` with zero warnings. Before and
+after linter output is committed in [`lint_report.txt`](lint_report.txt).
+
+The prompts used for each stretch feature, the rationale behind every edge
+case, the agent workflow, and the corrections I had to make by hand are all
+documented in [`ai_interactions.md`](ai_interactions.md). A terminal trace of
+the original broken game is in
+[`bug_trace_before.txt`](bug_trace_before.txt).

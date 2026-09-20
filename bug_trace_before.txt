@@ -1,0 +1,34 @@
+======================================================================
+GAME GLITCH INVESTIGATOR - reproduction trace of the ORIGINAL starter
+Captured with streamlit.testing.v1.AppTest, which runs the real
+app.py script. Difficulty Normal (range 1-100), secret forced to 25
+so the runs are reproducible.
+======================================================================
+
+--- BUG 2: attempt counter is wrong before I have played at all ---
+  sidebar promises      : Attempts allowed: 8
+  banner on first load  : ['Guess a number between 1 and 100. Attempts left: 7']
+
+--- BUG 1 + BUG 4: hints point the wrong way, score moves wrong ---
+  guess  30 (secret 25) -> hint ['📈 Go HIGHER!']
+                          score=5  ['Guess a number between 1 and 100. Attempts left: 7']
+  guess  26 (secret 25) -> hint ['📈 Go HIGHER!']
+                          score=0  ['Guess a number between 1 and 100. Attempts left: 6']
+  guess  24 (secret 25) -> hint ['📉 Go LOWER!']
+                          score=-5  ['Guess a number between 1 and 100. Attempts left: 5']
+  guess  20 (secret 25) -> hint ['📉 Go LOWER!']
+                          score=-10  ['Guess a number between 1 and 100. Attempts left: 4']
+
+--- BUG 2: invalid input still costs a turn ---
+  typed '!!!' : attempts went 5 -> 6
+  message     : ['That is not a number.']
+
+--- BUG 3: New Game does not start a new game ---
+  after clicking New Game -> status='won' score=999 attempts=0
+  page shows              : ['Guess a number between 1 and 100. Attempts left: 8', 'You already won. Start a new game to play again.']
+
+======================================================================
+No exception was raised at any point above. Every wrong answer was
+returned silently, which is why the Console Output column of the
+Bug Reproduction Log in reflection.md reads 'none' on every row.
+======================================================================

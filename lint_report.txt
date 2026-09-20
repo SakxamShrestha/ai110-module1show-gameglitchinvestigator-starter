@@ -1,1 +1,16 @@
+flake8 report - Game Glitch Investigator
+Generated with: flake8 --max-line-length=100
+========================================================================
+
+BEFORE - the original starter code (recovered from git commit ba85c5b)
+------------------------------------------------------------------------
+app.py:4:1: E302 expected 2 blank lines, found 1
+app.py:67:1: E305 expected 2 blank lines after class or function definition, found 1
+2 issues.
+
+AFTER - the repaired code
+------------------------------------------------------------------------
+$ flake8 --max-line-length=100 app.py logic_utils.py tests/ play_session.py
+(no output)
 exit code: 0
+0 issues.

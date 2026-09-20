@@ -28,6 +28,12 @@ I opened "Developer Debug Info" so I could watch the score while I played. With 
 | (Bug 4) Guess `30` as my first guess when the secret is `25` | Wrong guess, so the score should drop | Score rose from 0 to 5 | none |
 | (Bug 4) Guess `20` next, still wrong | Score drops again | Score returned to 0, then bounced 5, 0, 5, 0 across four wrong guesses | none |
 
+The full terminal trace of the broken game is committed in
+[`bug_trace_before.txt`](bug_trace_before.txt). I captured it by restoring the
+original `app.py` out of git and driving it with
+`streamlit.testing.v1.AppTest`, so it is the real program's own output rather
+than something I typed up afterwards.
+
 ## 2. How did you use AI as a teammate?
 
 I used Claude Code as my primary AI coding assistant, working in VS Code with `app.py`
