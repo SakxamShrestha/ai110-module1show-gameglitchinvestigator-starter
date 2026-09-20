@@ -140,13 +140,67 @@ instead of writing a special rule for it.
 
 ## 4. What did you learn about Streamlit and state?
 
-- How would you explain Streamlit "reruns" and session state to a friend who has never used Streamlit?
+The thing I did not understand at the start was that Streamlit re-runs my
+entire script from the top every single time anything happens on the page. Every
+button click, every difficulty change, every committed keystroke. I had been
+reading `app.py` like a normal program that runs once, and almost nothing about
+the bugs made sense until I stopped doing that.
+
+The way I would explain it to a friend is this. Imagine a script that is run
+from scratch every time you touch the page, and whose only memory of the last
+run is one dictionary called `st.session_state`. Any ordinary variable you
+create is gone the moment the user clicks anything, because the line that
+created it is about to run again from the top. If you want a value to survive a
+click, it has to live in that dictionary. That is the whole idea.
+
+Once I understood that, the bugs stopped looking like separate problems. The
+secret number "changing its mind" was not randomness - it was a variable being
+re-initialised on a rerun. The New Game button was the exact mirror image:
+state that persisted when it should have been cleared. They are the same lesson
+seen from opposite sides, which is why my fix sends every per-round value
+through a single `start_new_game()` function. When resetting is spread across
+an `if` block, some later edit forgets a key. When there is exactly one writer,
+it cannot.
+
+The second thing that caught me out is that render order is execution order. I
+had an `st.info()` banner sitting above the submit handler, and it kept showing
+the attempt count from *before* my guess - not because the value was wrong, but
+because that line genuinely ran first. The fix was `st.empty()`, which reserves
+a spot on the page so you can fill it in later once the state is settled.
 
 ---
 
 ## 5. Looking ahead: your developer habits
 
-- What is one habit or strategy from this project that you want to reuse in future labs or projects?
-  - This could be a testing habit, a prompting strategy, or a way you used Git.
-- What is one thing you would do differently next time you work with AI on a coding task?
-- In one or two sentences, describe how this project changed the way you think about AI generated code.
+The habit I want to keep is writing the failing test before I accept a fix. It
+changed what I was actually doing when the AI handed me a diff. Instead of
+staring at code I did not write and deciding whether it looked plausible - which
+I am not really qualified to judge - I had a test that either went from red to
+green or did not. It is a much smaller question, and I can answer it honestly.
+
+The Git habit I picked up alongside it was committing in stages rather than in
+one lump at the end, which turned out to matter more than I expected. At one
+point I let the AI rewrite three files at once, and the result worked but had
+gone further than I had asked. Because my last commit was a clean checkpoint, I
+could roll the whole thing back with `git stash` and start again deliberately,
+instead of trying to unpick which parts I wanted. Having somewhere safe to
+return to is what made rejecting the AI's work a cheap decision rather than an
+expensive one.
+
+The thing I would do differently is prompt at the root cause instead of the
+symptom. My early questions were things like "the hints are backwards", and I
+got back patches to `check_guess`, because that is where hints are printed. The
+moment I asked "why does the secret change type between attempts", I got the
+real explanation in one reply. The AI answers the question you asked, very
+literally, so a question aimed at a symptom gets an answer aimed at a symptom. I
+also learned to ask it to justify a file before pasting it - that is how I
+caught it adding a whole feature I had never asked for.
+
+What changed most is how I read AI-generated code. The starter is not badly
+written. It is tidy, it has type hints, it has sensible function names, and it
+runs without crashing. That is exactly what made it dangerous. The
+`try/except TypeError` block looks like careful defensive programming, and what
+it actually did was turn a loud crash into a silent wrong answer that then fed
+bad data into the scoring system. I now treat a broad `except` in generated code
+as a place to look harder rather than a sign that the edge cases were handled,
+and I trust a test over my own impression of whether code looks right.
