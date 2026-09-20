@@ -41,3 +41,6 @@ Thumbs.db
 .idea/
 *.swp
 *.swo
+
+# Local build folder for the runbook artifact (not part of the project)
+.runbook-build/
