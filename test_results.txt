@@ -1,0 +1,65 @@
+============================= test session starts ==============================
+platform darwin -- Python 3.12.7, pytest-8.4.2, pluggy-1.6.0 -- /opt/anaconda3/bin/python
+cachedir: .pytest_cache
+rootdir: /Users/sakxamshrestha/Desktop/ai110-module1show-gameglitchinvestigator-starter
+configfile: pytest.ini
+testpaths: tests
+plugins: mock-3.15.1, asyncio-1.2.0, Faker-40.13.0, anyio-4.2.0, hydra-core-1.3.2
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 53 items
+
+tests/test_game_logic.py::test_winning_guess PASSED                      [  1%]
+tests/test_game_logic.py::test_guess_too_high PASSED                     [  3%]
+tests/test_game_logic.py::test_guess_too_low PASSED                      [  5%]
+tests/test_game_logic.py::test_bug1_guess_above_secret_is_told_to_go_lower PASSED [  7%]
+tests/test_game_logic.py::test_bug1_guess_below_secret_is_told_to_go_higher PASSED [  9%]
+tests/test_game_logic.py::test_bug1_hints_stay_consistent_across_the_whole_range[1-Too Low] PASSED [ 11%]
+tests/test_game_logic.py::test_bug1_hints_stay_consistent_across_the_whole_range[49-Too Low] PASSED [ 13%]
+tests/test_game_logic.py::test_bug1_hints_stay_consistent_across_the_whole_range[50-Win] PASSED [ 15%]
+tests/test_game_logic.py::test_bug1_hints_stay_consistent_across_the_whole_range[51-Too High] PASSED [ 16%]
+tests/test_game_logic.py::test_bug1_hints_stay_consistent_across_the_whole_range[100-Too High] PASSED [ 18%]
+tests/test_game_logic.py::test_bug1_a_string_secret_does_not_compare_alphabetically PASSED [ 20%]
+tests/test_game_logic.py::test_bug2_a_fresh_game_has_not_used_any_attempts PASSED [ 22%]
+tests/test_game_logic.py::test_bug2_invalid_input_does_not_cost_an_attempt PASSED [ 24%]
+tests/test_game_logic.py::test_bug2_a_valid_guess_costs_exactly_one_attempt PASSED [ 26%]
+tests/test_game_logic.py::test_bug3_new_game_after_a_win_resets_every_piece_of_state PASSED [ 28%]
+tests/test_game_logic.py::test_bug3_new_game_brings_back_the_guess_box PASSED [ 30%]
+tests/test_game_logic.py::test_bug3_new_game_respects_the_difficulty_range PASSED [ 32%]
+tests/test_game_logic.py::test_bug3_the_high_score_survives_a_new_game PASSED [ 33%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[1] PASSED [ 35%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[2] PASSED [ 37%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[3] PASSED [ 39%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[4] PASSED [ 41%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[5] PASSED [ 43%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[6] PASSED [ 45%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[7] PASSED [ 47%]
+tests/test_game_logic.py::test_bug4_a_wrong_guess_never_pays_points[8] PASSED [ 49%]
+tests/test_game_logic.py::test_bug4_the_score_does_not_bounce_across_four_wrong_guesses PASSED [ 50%]
+tests/test_game_logic.py::test_bug4_the_score_never_goes_negative PASSED [ 52%]
+tests/test_game_logic.py::test_bug4_winning_on_the_first_attempt_pays_full_marks PASSED [ 54%]
+tests/test_game_logic.py::test_bug4_the_win_payout_shrinks_with_each_attempt_used PASSED [ 56%]
+tests/test_game_logic.py::test_bug4_the_win_payout_floors_at_ten PASSED  [ 58%]
+tests/test_game_logic.py::test_bug4_an_unknown_outcome_leaves_the_score_alone PASSED [ 60%]
+tests/test_game_logic.py::test_bug4_the_score_only_rises_on_a_win_during_real_play PASSED [ 62%]
+tests/test_game_logic.py::test_parse_guess_rejects_non_numeric_input[abc] PASSED [ 64%]
+tests/test_game_logic.py::test_parse_guess_rejects_non_numeric_input[!!!] PASSED [ 66%]
+tests/test_game_logic.py::test_parse_guess_rejects_non_numeric_input[ten] PASSED [ 67%]
+tests/test_game_logic.py::test_parse_guess_rejects_non_numeric_input[5 0] PASSED [ 69%]
+tests/test_game_logic.py::test_parse_guess_rejects_non_numeric_input[1e3] PASSED [ 71%]
+tests/test_game_logic.py::test_parse_guess_rejects_non_numeric_input[50.5] PASSED [ 73%]
+tests/test_game_logic.py::test_parse_guess_rejects_empty_input[] PASSED  [ 75%]
+tests/test_game_logic.py::test_parse_guess_rejects_empty_input[   ] PASSED [ 77%]
+tests/test_game_logic.py::test_parse_guess_rejects_empty_input[\t] PASSED [ 79%]
+tests/test_game_logic.py::test_parse_guess_rejects_empty_input[None] PASSED [ 81%]
+tests/test_game_logic.py::test_parse_guess_rejects_negative_numbers_outside_the_range PASSED [ 83%]
+tests/test_game_logic.py::test_parse_guess_rejects_numbers_above_the_range PASSED [ 84%]
+tests/test_game_logic.py::test_parse_guess_range_bounds_are_inclusive PASSED [ 86%]
+tests/test_game_logic.py::test_parse_guess_strips_surrounding_whitespace PASSED [ 88%]
+tests/test_game_logic.py::test_get_range_for_difficulty[Easy-expected0] PASSED [ 90%]
+tests/test_game_logic.py::test_get_range_for_difficulty[Normal-expected1] PASSED [ 92%]
+tests/test_game_logic.py::test_get_range_for_difficulty[Hard-expected2] PASSED [ 94%]
+tests/test_game_logic.py::test_get_range_for_difficulty[Unknown-expected3] PASSED [ 96%]
+tests/test_game_logic.py::test_hard_is_actually_harder_than_normal PASSED [ 98%]
+tests/test_game_logic.py::test_proximity_label_gets_colder_with_distance PASSED [100%]
+
+============================== 53 passed in 1.14s ==============================
