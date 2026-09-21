@@ -2,16 +2,16 @@
 
 ## 1. What was broken when you started?
 
-Just launching the opening the game, there was no visible bug, but my each attempt against the secret gave me wrong direction. I played 4-5 rounds of game and could not win by myself (which we can if we do mental binary search usually), and by looking in the secret in the developer panel I figured out there is some problems in the backend logic. 
+Just launching the game, there was no visible bug, but my each attempt against the secret gave me wrong direction. I played 4-5 rounds of game and could not win by myself (which we can if we do mental binary search usually), and by looking in the secret in the developer panel I figured out there were some problems in the backend logic. 
 
 **Bug 1 — The hints point the wrong way.**
-I set up a round where the secret was 25 and I guessed 26. The game told me "Go HIGHER!". I then guessed 24 instead and it told me "Go LOWER!". Both hints sent me away from the answer, so following the game's own advice took me further from the number every turn.
+I set up a round where the secret was 25 and I guessed 26. The game told me "📈 Go HIGHER!". I then guessed 24 instead and it told me "📉 Go LOWER!". Both hints sent me away from the answer, so following the game's own advice took me further from the number every turn.
 
 **Bug 2 — The attempt counter is wrong, and typos cost you a turn.**
-The sidebar says "Attempts allowed: 8", but the moment the page loads and before I have guessed anything, the banner already reads "Attempts left: 7". I lost a turn just by opening the game. It gets worse if we mistype anything other than words. I typed some other symbols and characters for testing, and got "That is not a number", but the counter still dropped, from reamining 4 to 3. Invalid inputs still cost you. 
+The sidebar says "Attempts allowed: 8", but the moment the page loads and before I have guessed anything, the banner already reads "Attempts left: 7". I lost a turn just by opening the game. It gets worse if you mistype. I typed some symbols and characters just to test it, and got "That is not a number.", but the counter still dropped, from 4 remaining to 3. Invalid inputs still cost you. 
 
 **Bug 3 — The New Game button doesn't start a new game.**
-After I finally won a round by typing the secret, I clicked "New Game started." and then the page went straight back to "You already won. Start a new game to play again." The guess box and Submit button disappear, so there is no way to keep playing. My score from the previous round also carried over instead of resetting to 0. The only way to act to stop the server and restart it.
+After I finally won a round by typing the secret, I clicked "New Game 🔁". It flashed "New game started." and then the page went straight back to "You already won. Start a new game to play again." The guess box and Submit button disappear, so there is no way to keep playing. My score from the previous round also carried over instead of resetting to 0. The only way to play again was to stop the server and restart it.
 
 **Bug 4 — The score moves in the wrong direction, and can even go negative.**
 I opened "Developer Debug Info" so I could watch the score while I played. With the secret at 25, I guessed 30 and the score went up from 0 to 5. The game paid me for missing. I guessed 20, also wrong, and it went back down to 0. Four wrong guesses in a row and the score just bounced 5, 0, 5, 0 without settling anywhere.
@@ -20,11 +20,11 @@ I opened "Developer Debug Info" so I could watch the score while I played. With 
 
 | Input | Expected Behavior | Actual Behavior | Console Output / Error |
 |-------|-------------------|-----------------|------------------------|
-| (Bug 1) Guess `26` when the secret is `25` | Hint tells me to go lower | Hint reads ` Go HIGHER!` | none |
-| (Bug 1) Guess `24` when the secret is `25` | Hint tells me to go higher | Hint reads `Go LOWER!` | none |
+| (Bug 1) Guess `26` when the secret is `25` | Hint tells me to go lower | Hint reads `📈 Go HIGHER!` | none |
+| (Bug 1) Guess `24` when the secret is `25` | Hint tells me to go higher | Hint reads `📉 Go LOWER!` | none |
 | (Bug 2) Load the page, guess nothing | "Attempts left: 8", matching the sidebar's "Attempts allowed: 8" | "Attempts left: 7" before I have played a single turn | none |
 | (Bug 2) Type `!!!` and press Submit | Error shown, attempt not counted | `That is not a number.` shown and attempts left dropped from 4 to 3 | none |
-| (Bug 3) Click **New Game ** after winning a round | Fresh round: score 0, attempts reset, guess box returns | "You already won. Start a new game to play again." Guess box and Submit button gone; previous score kept | none |
+| (Bug 3) Click **New Game 🔁** after winning a round | Fresh round: score 0, attempts reset, guess box returns | "You already won. Start a new game to play again." Guess box and Submit button gone; previous score kept | none |
 | (Bug 4) Guess `30` as my first guess when the secret is `25` | Wrong guess, so the score should drop | Score rose from 0 to 5 | none |
 | (Bug 4) Guess `20` next, still wrong | Score drops again | Score returned to 0, then bounced 5, 0, 5, 0 across four wrong guesses | none |
 

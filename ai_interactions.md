@@ -196,21 +196,53 @@ else:
 
 | | Model A | Model B |
 |-|---------|---------|
-| **Model name** | Claude Opus 5 (via Claude Code) | <!-- fill in: e.g. GPT-4o, Gemini, Copilot --> |
-| **Response summary** | Traced the full chain in order: `9 == "50"` returns `False` without error because Python compares int to str with `==` quite happily; `9 > "50"` then raises `TypeError` because ordering across those types is not defined; the `except TypeError` block catches it and retries as `str(9) > "50"`; `"9" > "50"` is `True` because string comparison goes character by character and `"9"` sorts after `"5"` regardless of length. Identified the **`except TypeError` block** as the root cause rather than the `str()` cast, on the grounds that the cast creates a loud error and the `except` is what converts it into a silent wrong answer. Fix: delete the `except` entirely, coerce both operands with `int()`, and return a bare outcome string with the hint text moved to a separate lookup. | |
-| **More Pythonic?** | | |
-| **Clearer explanation?** | | |
+| **Model name** | Claude Opus 5 (via Claude Code) | Google Gemini |
+| **Response summary** | Traced the full chain in order: `9 == "50"` returns `False` without error because Python compares int to str with `==` quite happily; `9 > "50"` then raises `TypeError` because ordering across those types is not defined; the `except TypeError` block catches it and retries as `str(9) > "50"`; `"9" > "50"` is `True` because string comparison goes character by character and `"9"` sorts after `"5"` regardless of length. Identified the **`except TypeError` block** as the root cause rather than the `str()` cast, on the grounds that the cast creates a loud error and the `except` is what converts it into a silent wrong answer. Fix: delete the `except` entirely, coerce both operands with `int()`, and return a bare outcome string with the hint text moved to a separate lookup. | Named the problem immediately as lexicographic comparison and explained it with ASCII values: `'9'` is 57, `'5'` is 53, so `"9" > "50"` is `True`. Spotted, without being asked, that the hint text is inverted as a **separate secondary bug** - `"Too High"` was paired with `"Go HIGHER!"`. Also pointed out a case I had not considered: if the guess arrives from Streamlit as a string, the comparison never raises at all and goes straight down the lexicographic path inside the `try`. Fix: cast both values with `int()` up front, wrap that in `except (ValueError, TypeError)` returning a new `"Invalid"` outcome, swap the two hint sentences, and remove the alternating `str()` cast from the caller. |
+| **More Pythonic?** | Yes, for this codebase. Returns a bare outcome string, which is what the existing `tests/test_game_logic.py` asserts, and pushes the hint text into a `HINTS` dict so the label and the sentence cannot drift apart. No exception handling around the comparison at all. | Cleaner to read in isolation - the `if/elif/else` chain is tidier than what I ended up with. But it returns **tuples**, and it re-introduces an `except` around the `int()` cast that returns a fourth outcome, `"Invalid"`, which nothing downstream handles. |
+| **Clearer explanation?** | Went deeper. It was the only one to notice that `9 == "50"` returns `False` silently, which means a genuinely **winning** guess also fails on an even-numbered attempt. It also argued *which line* is to blame and why. Longer, and took more reading. | Easier to follow on a first read. Three labelled points, the ASCII numbers stated outright, and a short corrected snippet. If I had been handed only this, I would have understood the bug faster. |
 
 **Which did you prefer and why?**
 
-<!-- Your conclusion. Things worth judging when you compare them:
+They split it, and I did not expect that going in.
 
-  - Did the model DELETE the try/except TypeError, or did it patch inside it?
-    Patching inside keeps the silent-failure behaviour alive.
-  - Did it fix the root cause in app.py (the str() cast on line 159), or only
-    the symptom in check_guess? A fix that only touches check_guess leaves the
-    caller still corrupting its own data.
-  - Did it notice that the outcome LABEL being wrong matters more than the
-    message text, because the label is what gets passed to update_score?
-  - Did it explain WHY "9" > "50" is True, or just assert that it is?
--->
+**Gemini gave the clearer explanation.** It led with the actual answer -
+lexicographic comparison - and backed it with the ASCII numbers, `'9'` is 57
+and `'5'` is 53. Three labelled points and it was done. Claude's walkthrough
+was more thorough but I had to read it twice. Gemini also caught something on
+its own initiative that I had been treating as a separate bug entirely: it
+flagged the inverted hint text as a secondary defect without being asked about
+it. And it raised a case neither I nor Claude had considered - if the guess
+arrives from Streamlit as a *string*, the comparison never raises `TypeError`
+at all and goes straight down the lexicographic path inside the `try`, so the
+`except` is not even required to trigger the bug.
+
+**Claude gave the fix that actually fits this codebase**, and I only found that
+out by testing Gemini's version rather than reading it. Gemini's
+`check_guess` returns tuples, so I ran it against my three starter tests:
+
+```
+test_winning_guess : result=('Win', '🎉 Correct!')  == 'Win' ?  False
+test_guess_too_high: result=('Too High', '📉 Go LOWER!')  == 'Too High' ?  False
+test_guess_too_low : result=('Too Low', '📈 Go HIGHER!')  == 'Too Low' ?  False
+```
+
+All three fail. They assert `check_guess(50, 50) == "Win"`, and a tuple is
+never equal to a string. Adopting Gemini's version would have meant editing
+the starter tests so my code could pass them, which is backwards.
+
+The deeper problem is its `except (ValueError, TypeError)` around the `int()`
+cast, returning a new `"Invalid"` outcome. That is the same shape as the bug we
+were fixing - an `except` that swallows a type error and returns a plausible
+value instead. Nothing downstream knows what `"Invalid"` means:
+`update_score` has no branch for it and falls through unchanged, and `app.py`'s
+`if outcome == "Win": ... else:` treats it as an ordinary wrong guess, so the
+player loses an attempt to a typo. Validation already lives in `parse_guess`,
+which is the right place for it. Gemini fixed the bug and quietly planted a
+smaller one of the same species.
+
+**What I took from the comparison:** the more readable explanation and the
+better-fitting fix did not come from the same model, so "which is better" was
+the wrong question. Gemini is what I would hand someone who needs to understand
+this bug in two minutes. Claude's is what I would merge. And the only reason I
+can tell them apart with any confidence is that I ran Gemini's code against my
+tests instead of judging it by how it read.
